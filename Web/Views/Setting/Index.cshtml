@@ -1,0 +1,236 @@
+﻿@* @{
+    ViewData["Title"] = "Raspberry Pi SSH Control";
+    var sessionId = Context.Request.Cookies["SessionId"];
+    var message = ViewBag.Message;
+}
+
+<h1>Raspberry Pi Remote Control</h1>
+ *@
+@* <form method="post" asp-controller="RaspberryPi" asp-action="Execute">
+    <button name="actionType" value="connect" class="btn btn-primary">Connect</button>
+    <button name="actionType" value="camera_on" class="btn btn-success">Turn On Camera</button>
+    <button name="actionType" value="camera_off" class="btn btn-warning">Turn Off Camera</button>
+    <button name="actionType" value="update" class="btn btn-info">Update Software</button>
+</form> *@
+@* 
+<form method="post" asp-action="Execute">
+    <button name="actionType" value="connect" class="btn btn-primary">Connect</button>
+    <button name="actionType" value="camera_on" class="btn btn-success">Turn On Camera</button>
+    <button name="actionType" value="camera_off" class="btn btn-warning">Turn Off Camera</button>
+    <button name="actionType" value="update" class="btn btn-info">Update Software</button>
+</form>
+
+<form method="get"  asp-action="Ping">
+    <button class="btn btn-dark">Ping Raspberry Pi</button>
+</form>
+
+
+<!-- Simulated Terminal Output -->
+<div class="terminal-box">
+    <div class="terminal-header">raspberrypi@localhost:~$</div>
+    <pre class="terminal-output">@message</pre>
+</div>
+
+<style>
+    .terminal-box {
+        background-color: #1e1e1e;
+        color: #00ff00;
+        font-family: monospace;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #333;
+        min-height: 200px;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        margin-top: 20px;
+    }
+    .terminal-header {
+        color: #ffffff;
+        margin-bottom: 5px;
+    }
+    .terminal-output {
+        color: #00ff00;
+    }
+</style>
+<h2>@message</h2>
+@if (ViewBag.Meessage != null)
+{
+    <div class="alert alert-secondary mt-3">
+        <pre>@ViewBag.Message</pre>
+    </div>
+} *@
+
+
+
+
+
+
+
+@* @{
+    ViewData["Title"] = "Raspberry Pi Terminal";
+    var history = ViewBag.TerminalHistory as string ?? "";
+    var commonCommands = new[] { "ls", "pwd", "uptime", "df -h", "top -n 1", "cat /etc/os-release", "reboot", "sudo apt update", "sudo apt upgrade -y", "libcamera-vid -t 0 --inline --listen", "pkill libcamera-vid" };
+}
+
+<h2>Raspberry Pi Terminal</h2>
+
+<div class="terminal-container mb-3" id="terminal">
+    <pre>@Html.Raw(history.Replace("\n", "<br/>"))</pre>
+</div>
+
+<form method="post" asp-action="SendCommand" id="terminal-form" class="d-flex mb-2">
+    <span class="me-2">pi@raspberrypi:~$</span>
+    <input list="commands" id="command-input" type="text" name="command" class="form-control me-2" autofocus autocomplete="off" />
+    <datalist id="commands">
+        @foreach (var cmd in commonCommands)
+        {
+            <option value="@cmd" />
+        }
+    </datalist>
+    <button class="btn btn-primary">Execute</button>
+</form>
+
+<form method="post" asp-action="ClearTerminal">
+    <button class="btn btn-danger">Clear</button>
+</form>
+
+<style>
+    .terminal-container {
+        background-color: #1e1e1e;
+        color: #00ff00;
+        font-family: monospace;
+        padding: 15px;
+        border-radius: 10px;
+        height: 400px;
+        overflow-y: scroll;
+        white-space: pre-wrap;
+        border: 1px solid #333;
+    }
+</style>
+ *@
+@{
+    ViewData["Title"] = "Terminal UI";
+    var history = ViewBag.TerminalHistory as string ?? "";
+}
+
+<style>
+    body {
+        background-color: #1e1e2e;
+        color: #00ff88;
+        font-family: monospace;
+        margin: 0;
+        padding-bottom: 60px; /* Footer height */
+    }
+
+    .terminal {
+        padding: 20px;
+        white-space: pre-wrap;
+    }
+
+    .input-area {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #111;
+        border-top: 1px solid #333;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+        .footer button {
+            background-color: #222;
+            border: 1px solid #444;
+            color: #0f0;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+            .footer button:hover {
+                background-color: #333;
+            }
+
+    input[type="text"] {
+        background-color: #1e1e2e;
+        color: #00ff88;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid #00ff88;
+        width: 100%;
+    }
+</style>
+
+<div class="terminal">
+    @Html.Raw(history.Replace("\n", "<br/>"))
+
+    <form method="post" asp-action="SendCommand" class="input-area">
+        <span>pi@raspberrypi:~$</span>
+        <input type="text" name="command" autofocus autocomplete="off" />
+    </form>
+</div>
+
+<div class="footer">
+    <form method="post" asp-action="Execute">
+        <button name="actionType" value="connect">Connect</button>
+        <button name="actionType" value="camera_on">Camera On</button>
+        <button name="actionType" value="camera_off">Camera Off</button>
+        <button name="actionType" value="update">Update</button>
+    </form>
+</div>
+
+<script>
+    const input = document.getElementById("command-input");
+    const form = document.getElementById("terminal-form");
+    const terminal = document.getElementById("terminal");
+
+    // Scroll to bottom on load
+    terminal.scrollTop = terminal.scrollHeight;
+
+    // Keyboard shortcuts
+    input.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.key.toLowerCase() === "l") {
+            e.preventDefault();
+            fetch('@Url.Action("ClearTerminal", "RaspberryPi")', {
+                method: "POST"
+            }).then(() => location.reload());
+        }
+    });
+
+    // Optional: arrow key history (client-side memory only)
+    const history = [];
+    let historyIndex = -1;
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                historyIndex--;
+                input.value = history[historyIndex];
+            }
+        }
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                input.value = history[historyIndex];
+            } else {
+                input.value = "";
+            }
+        }
+    });
+
+    form.addEventListener("submit", function () {
+        if (input.value.trim()) {
+            history.push(input.value.trim());
+            historyIndex = history.length;
+        }
+    });
+</script>
+
