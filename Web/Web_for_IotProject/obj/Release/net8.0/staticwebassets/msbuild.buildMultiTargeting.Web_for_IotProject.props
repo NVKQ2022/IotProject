@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Web_for_IotProject.props" />
+</Project>
