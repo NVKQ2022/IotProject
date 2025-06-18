@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web_for_IotProject", "Web_for_IotProject\Web_for_IotProject.csproj", "{6460981F-FFD3-40D5-A1D4-13B6C71F59EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6460981F-FFD3-40D5-A1D4-13B6C71F59EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6460981F-FFD3-40D5-A1D4-13B6C71F59EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6460981F-FFD3-40D5-A1D4-13B6C71F59EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6460981F-FFD3-40D5-A1D4-13B6C71F59EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
